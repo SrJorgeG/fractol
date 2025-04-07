@@ -6,7 +6,7 @@
 /*   By: jgomez-d <jgomez-d@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 04:30:26 by jgomez-d          #+#    #+#             */
-/*   Updated: 2025/04/07 05:28:11 by jgomez-d         ###   ########.fr       */
+/*   Updated: 2025/04/07 19:27:42 by jgomez-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,12 @@ void	draw(t_data *data)
 		while (++x < WIDTH)
 		{
 			coord.x = re_scale(x, data->zoom, data->inc_x, data->scale_x);
-			iter = calc_iterations(data, (t_coord *){0,0}, &coord);
+			iter = calc_iterations(data, &(t_coord){0,0}, &coord);
 			if (iter >= data->quality)
-			{
-				/* code */
-			}
+				set_pixel_color(data->img_data, x , y, BLACK);
+			else
+				set_pixel_color(data->img_data, x, y, calc_gradient(iter, data->quality));
+			
 		}
 	}
 	
