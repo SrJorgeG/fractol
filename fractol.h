@@ -6,7 +6,7 @@
 /*   By: jgomez-d <jgomez-d@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 00:01:35 by jgomez-d          #+#    #+#             */
-/*   Updated: 2025/04/07 01:26:31 by jgomez-d         ###   ########.fr       */
+/*   Updated: 2025/04/07 04:41:44 by jgomez-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,11 @@
 # include <math.h>
 # include <stdlib.h>
 
+typedef struct s_coord
+{
+	double	x;
+	double	y;
+} t_coord;
 
 typedef struct s_imgdata
 {
@@ -37,8 +42,8 @@ typedef struct s_data
 {
 	void		*mlx;
 	void		*win;
-	int			frac_type;
 	t_imgdata 	*img_data;
+	int			frac_type;
 	int			pallete[9];
 	double		inc_x;
 	double		inc_y;
@@ -58,6 +63,7 @@ size_t	ft_strlen(const char *s);
 void	ft_bzero(void *s, size_t n);
 void	*ft_calloc(size_t nmemb, size_t size);
 void	error_exit(t_data *data);
+void	pre_init(t_data *data);
 void	init(t_data *data);
 
 

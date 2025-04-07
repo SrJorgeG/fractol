@@ -6,7 +6,7 @@
 /*   By: jgomez-d <jgomez-d@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 00:34:08 by jgomez-d          #+#    #+#             */
-/*   Updated: 2025/04/07 01:41:59 by jgomez-d         ###   ########.fr       */
+/*   Updated: 2025/04/07 04:41:01 by jgomez-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,27 @@ void error_exit(t_data *data)
 	exit(1);
 }
 
+void	pre_init(t_data *data)
+{
+	data->mlx = NULL;
+	data->win = NULL;
+	data->img_data = NULL;
+	data->frac_type = 0;
+	data->inc_x = 0;
+	data->inc_y = 0;
+	data->quality = 0;
+	data->zoom = 1.0;
+	data->is_print = 0;
+	data->scale_x = 4 / WIDTH;
+	data->scale_y = 4 / HEIGHT;
+	data->j_c_real = 0;
+	data->j_c_i = 0;
+}
+
 void	init(t_data *data)
 {
-	data = ft_calloc(1 , sizeof(t_data));
-	if (!data)
-		error_exit(data);
+	
+	
 	data->mlx = mlx_init();
 	if (!data->mlx)
 		error_exit(data);
