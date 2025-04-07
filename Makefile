@@ -6,7 +6,7 @@
 #    By: jgomez-d <jgomez-d@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 22:46:08 by jgomez-d          #+#    #+#              #
-#    Updated: 2025/04/07 04:30:38 by jgomez-d         ###   ########.fr        #
+#    Updated: 2025/04/07 20:08:09 by jgomez-d         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ MLXDIR = minilibx-linux
 MLXLIB = $(MLXDIR)/libmlx_Linux.a
 CFLAGS  = -Wall -Wextra -Werror -g 
 #-fsanitize=address,leak
-SRC = fractol.c init.c aux_functions.c draw.c
+SRC = fractol.c init.c aux_functions.c draw.c color.c
 
 OBJ = $(SRC:.c=.o)
 

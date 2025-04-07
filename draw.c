@@ -6,46 +6,85 @@
 /*   By: jgomez-d <jgomez-d@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 04:30:26 by jgomez-d          #+#    #+#             */
-/*   Updated: 2025/04/07 19:27:42 by jgomez-d         ###   ########.fr       */
+/*   Updated: 2025/04/07 21:38:40 by jgomez-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-t_coord	iter_mandelbrot(t_coord *z, t_coord *c)
+t_coord	mandelbrot_iterate(t_coord z, t_coord c)
 {
-	t_coord res;	
-	res.x = pow(z->x, 2) - pow(z->y, 2) + c->x; 
-	res.y = 2 * z->x * z->y + c->y; 
-	return (res);
+	t_coord	result;
+
+	result.x = z.x * z.x - z.y * z.y + c.x;
+	result.y = 2 * z.x * z.y + c.y;
+	return (result);
 }
 
-int	calc_iterations(t_data *data, t_coord *z, t_coord *c)
+t_coord	burningship_iterate(t_coord z, t_coord c)
 {
-	int i = 0;
-	t_coord new_z;
-	
-	new_z.x = z->x;
-	new_z.y = z->y;
-	while ((pow(new_z.y, 2) + pow(new_z.x, 2) + c->y + c->x) < 4 && i < data->quality)
-		if (data->quality - 1 == i++)
+	t_coord	result;
+	double	abs_real;
+	double	abs_imag;
+
+	abs_real = fabs(z.x);
+	abs_imag = fabs(z.y);
+	result.x = abs_real * abs_real - abs_imag * abs_imag + c.x;
+	result.y = 2 * abs_real * abs_imag + c.y;
+	return (result);
+}
+
+double	compute_iterations(t_coord variable, t_coord constant, t_data *data,
+						t_coord (*iterate)(t_coord, t_coord))
+{
+	int		i;
+	t_coord	zn;
+	double	smooth_iter;
+	double	mod;
+
+	zn = variable;
+	i = 0;
+	while ((zn.x * zn.x + zn.y * zn.y) < 4.0
+		&& i < data->quality)
+	{
+		if (i == data->quality - 1)
 			return (data->quality);
-		else if (data->frac_type == MANDELBROT)
-			new_z = iter_mandelbrot(&new_z, c);
-	return (i);
+		zn = iterate(zn, constant);
+		i++;
+	}
+	mod = sqrt(zn.x * zn.x + zn.y * zn.y);
+	if (1.0f < log2(mod))
+		smooth_iter = (double)i + 1 - log2(log2(mod));
+	else
+		smooth_iter = (double)i + 1 - log2(1.0f);
+	return (smooth_iter);
+}
+
+double	calculate_fractal( t_data *data, t_coord	coord)
+{
+	if (data->frac_type == MANDELBROT)
+		return (compute_iterations((t_coord){0, 0}
+			, coord, data, mandelbrot_iterate));
+	/* else if (data->frac_type == JULIA)
+	{
+		return (compute_iterations(coord,
+				(t_coord){data->julia_c_real, data->julia_c_imag},
+			data, mandelbrot_iterate));
+	} */
+	return (0);
 }
 
 double	re_scale(int num, double zoom, double inc, int scale)
 {
-	return (((num * scale) - 2) / (zoom + inc));
+	return (((num * scale) - 2) / zoom + inc);
 }
 
 void	draw(t_data *data)
 {
-	int x;	
-	int y;
-	t_coord coord;
-	int iter;
+	int		x;	
+	int		y;
+	t_coord	coord;
+	double		iter;
 
 	y = -1;
 	while (++y < HEIGHT)
@@ -55,13 +94,13 @@ void	draw(t_data *data)
 		while (++x < WIDTH)
 		{
 			coord.x = re_scale(x, data->zoom, data->inc_x, data->scale_x);
-			iter = calc_iterations(data, &(t_coord){0,0}, &coord);
+			iter = calculate_fractal(data, coord);
 			if (iter >= data->quality)
-				set_pixel_color(data->img_data, x , y, BLACK);
+				set_pixel_color(data->img_data, x, y, data->pallete[data->fill_index]);
 			else
-				set_pixel_color(data->img_data, x, y, calc_gradient(iter, data->quality));
-			
+				set_pixel_color(data->img_data, x, y,
+					smooth_color(iter, data->quality, data));
 		}
 	}
-	
+	mlx_put_image_to_window(data->mlx, data->win, data->img_data->img, 0, 0);
 }
