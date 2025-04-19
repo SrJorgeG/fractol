@@ -6,7 +6,7 @@
 /*   By: jgomez-d <jgomez-d@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 05:42:49 by jgomez-d          #+#    #+#             */
-/*   Updated: 2025/04/18 07:33:52 by jgomez-d         ###   ########.fr       */
+/*   Updated: 2025/04/19 01:06:36 by jgomez-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,20 @@ int	good_exit(t_data *data)
 		free(data);
 	exit(0);
 	return (0);
+}
+
+void	reset_values(t_data *data)
+{
+	data->inc_x = 0.0;
+	data->inc_y = 0.0;
+	data->quality = QUALITY;
+	data->zoom = 1.0;
+	data->fill_index = 4;
+	data->scale_x = 4.0 / WIDTH;
+	data->scale_y = 4.0 / HEIGHT;
+	data->j_c_real = 0.35;
+	data->j_c_i = 0.35;
+	init_pallete(data);
 }
 
 int	mouse_hooks(int button, int x, int y, t_data *data)
@@ -58,14 +72,10 @@ int	key_hooks(int keysym, t_data *data)
 {
 	if (keysym == XK_Escape)
 		good_exit(data);
-	else if (keysym == XK_Right)
-		data->inc_x += 0.2;
-	else if (keysym == XK_Left)
-		data->inc_x -= 0.2;
-	else if (keysym == XK_Up)
-		data->inc_y -= 0.2;
-	else if (keysym == XK_Down)
-		data->inc_y += 0.2;
+	else if (keysym == XK_Right || keysym == XK_Left)
+		data->inc_x += (0.2 - 0.4 * (keysym == XK_Left)) / data->zoom;
+	else if (keysym == XK_Up || keysym == XK_Down)
+		data->inc_y -= (0.2 - 0.4 * (keysym == XK_Down)) / data->zoom;
 	else if (keysym == XK_plus || keysym == XK_KP_Add)
 		data->quality *= 1.1;
 	else if (keysym == XK_minus || keysym == XK_KP_Subtract)
@@ -76,6 +86,12 @@ int	key_hooks(int keysym, t_data *data)
 		change_pallete_g(data);
 	else if (keysym == XK_b || keysym == XK_B)
 		change_pallete_b(data);
-	draw(data);
-	return (0);
+	else if (keysym == XK_r || keysym == XK_R)
+		reset_values(data);
+	else if (keysym == XK_Tab)
+	{
+		data->frac_type = (data->frac_type + 1) % 3;
+		reset_values(data);
+	}
+	return (draw(data), 0);
 }

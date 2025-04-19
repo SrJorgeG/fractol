@@ -6,7 +6,7 @@
 /*   By: jgomez-d <jgomez-d@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 04:30:26 by jgomez-d          #+#    #+#             */
-/*   Updated: 2025/04/18 07:22:02 by jgomez-d         ###   ########.fr       */
+/*   Updated: 2025/04/19 00:22:05 by jgomez-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,5 +97,6 @@ void	draw(t_data *data)
 					smooth_color(iter, data->quality, data));
 		}
 	}
+	data->frames++;
 	mlx_put_image_to_window(data->mlx, data->win, data->img_data->img, 0, 0);
 }

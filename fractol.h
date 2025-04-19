@@ -6,7 +6,7 @@
 /*   By: jgomez-d <jgomez-d@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 00:01:35 by jgomez-d          #+#    #+#             */
-/*   Updated: 2025/04/18 07:34:38 by jgomez-d         ###   ########.fr       */
+/*   Updated: 2025/04/19 01:11:01 by jgomez-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 # define FRACTOL_H
 # define HEIGHT 600
 # define WIDTH 600
-# define MANDELBROT 1
-# define JULIA 2
-# define BSHIP 3
+# define MANDELBROT 0
+# define JULIA 1
+# define BSHIP 2
 # define WHITE 0xFFFFFF
 # define BLACK 0x000000
 # define QUALITY 100.0
@@ -43,17 +43,6 @@ typedef struct s_imgdata
 	int		endian;
 }	t_imgdata;
 
-typedef struct s_input
-{
-	char	input;
-	char	up;
-	char	down;
-	char	left;
-	char	right;
-	char	plus;
-	char	minus;
-} t_input;
-
 typedef struct s_data
 {
 	void		*mlx;
@@ -65,14 +54,13 @@ typedef struct s_data
 	double		inc_y;
 	double		quality;
 	double		zoom;
-	int			is_print;
 	int			fill_color;
 	int			fill_index;
 	double		scale_x;
 	double		scale_y;
-	double	 	j_c_real;
+	double		j_c_real;
 	double		j_c_i;
-	t_input		input;
+	int			frames;
 }	t_data;
 
 typedef struct s_color
@@ -112,9 +100,10 @@ void	set_pixel_color(t_imgdata *img_data, int x, int y, int color);
 
 // HOOKS
 
-int		key_hooks(int keysym, t_data *data);
-int		mouse_hooks(int button, int x, int y, t_data *data);
 int		good_exit(t_data *data);
+void	reset_values(t_data *data);
+int		mouse_hooks(int button, int x, int y, t_data *data);
+int		key_hooks(int keysym, t_data *data);
 
 // HOOK UTILS
 

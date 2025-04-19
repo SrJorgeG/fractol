@@ -6,7 +6,7 @@
 /*   By: jgomez-d <jgomez-d@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 00:34:08 by jgomez-d          #+#    #+#             */
-/*   Updated: 2025/04/18 04:51:20 by jgomez-d         ###   ########.fr       */
+/*   Updated: 2025/04/19 00:48:09 by jgomez-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,18 +42,12 @@ void	pre_init(t_data *data)
 	data->inc_y = 0.0;
 	data->quality = QUALITY;
 	data->zoom = 1.0;
-	data->is_print = 0;
 	data->fill_index = 4;
 	data->scale_x = 4.0 / WIDTH;
 	data->scale_y = 4.0 / HEIGHT;
 	data->j_c_real = 0.35;
 	data->j_c_i = 0.35;
-	data->input.up = 0;
-	data->input.down = 0;
-	data->input.left = 0;
-	data->input.right = 0;
-	data->input.plus = 0;
-	data->input.minus = 0;
+	data->frames = 0;
 	init_pallete(data);
 }
 
