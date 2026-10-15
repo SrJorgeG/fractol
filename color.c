@@ -6,45 +6,75 @@
 /*   By: jgomez-d <jgomez-d@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 18:46:40 by jgomez-d          #+#    #+#             */
-/*   Updated: 2025/04/18 07:40:03 by jgomez-d         ###   ########.fr       */
+/*   Updated: 2026/10/15 12:00:00 by jgomez-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-int	palette_color(double smooth_iter, double max_iter, t_data *data)
+static int	grey_color(double smooth_iter, t_data *data)
 {
-	t_color	color;
+	t_color	c;
 	int		i;
 	double	t;
+	double	pos;
 
-	t = (smooth_iter / max_iter * 8) - (int)(smooth_iter / max_iter * 8);
-	i = ((int)(smooth_iter / max_iter * 8) + data->fill_index) % 8;
+	pos = smooth_iter / data->max_iter * 8;
+	t = pos - (int)pos;
+	i = ((int)pos + data->fill_index) % 8;
 	if (i >= data->fill_index)
 		i++;
-	color.r = (int)((data->pallete[i] >> 16 & 0xFF)
-			+ ((data->pallete[(i + 1) % 9] >> 16 & 0xFF)
-				- (data->pallete[i] >> 16 & 0xFF)) * t);
-	color.g = (int)((data->pallete[i] >> 8 & 0xFF)
-			+ ((data->pallete[(i + 1) % 9] >> 8 & 0xFF)
-				- (data->pallete[i] >> 8 & 0xFF)) * t);
-	color.b = (int)((data->pallete[i] & 0xFF)
-			+ ((data->pallete[(i + 1) % 9] & 0xFF)
-				- (data->pallete[i] & 0xFF)) * t);
-	return ((color.r << 16) | (color.g << 8) | color.b);
+	c.r = (int)((data->pallete[i] >> 16 & 0xFF) + ((data->pallete[(i + 1)
+						% 9] >> 16 & 0xFF) - (data->pallete[i] >> 16 & 0xFF)) * t);
+	c.g = (int)((data->pallete[i] >> 8 & 0xFF) + ((data->pallete[(i + 1)
+						% 9] >> 8 & 0xFF) - (data->pallete[i] >> 8 & 0xFF)) * t);
+	c.b = (int)((data->pallete[i] & 0xFF) + ((data->pallete[(i + 1) % 9]
+					& 0xFF) - (data->pallete[i] & 0xFF)) * t);
+	return ((c.r << 16) | (c.g << 8) | c.b);
 }
 
-int	smooth_color(double smooth_iter, double max_iter, t_data *data)
+static int	cosine_color(double smooth_iter)
 {
-	if (smooth_iter >= max_iter)
-		return (data->fill_color);
+	double	t;
+	int		r;
+	int		g;
+	int		b;
+
+	t = sqrt(smooth_iter) * 0.15;
+	r = (int)(255 * (0.5 + 0.5 * cos(6.28318 * (t + 0.00))));
+	g = (int)(255 * (0.5 + 0.5 * cos(6.28318 * (t + 0.10))));
+	b = (int)(255 * (0.5 + 0.5 * cos(6.28318 * (t + 0.20))));
+	return ((r << 16) | (g << 8) | b);
+}
+
+static int	apply_shift(int color, t_color shift)
+{
+	int	r;
+	int	g;
+	int	b;
+
+	r = ((color >> 16 & 0xFF) + shift.r) & 0xFF;
+	g = ((color >> 8 & 0xFF) + shift.g) & 0xFF;
+	b = ((color & 0xFF) + shift.b) & 0xFF;
+	return ((r << 16) | (g << 8) | b);
+}
+
+int	pixel_color(double smooth_iter, t_data *data)
+{
+	int	color;
+
+	if (data->palette_mode == GREY)
+	{
+		if (smooth_iter >= data->max_iter)
+			color = data->pallete[data->fill_index];
+		else
+			color = grey_color(smooth_iter, data);
+	}
+	else if (smooth_iter >= data->max_iter)
+		return (BLACK);
 	else
-		return (palette_color(smooth_iter, max_iter, data));
-}
-
-double	scale_num(int num, double zoom, double scale, double added)
-{
-	return (((num * scale) - 2.0) / zoom + added);
+		color = cosine_color(smooth_iter);
+	return (apply_shift(color, data->shift));
 }
 
 void	set_pixel_color(t_imgdata *img_data, int x, int y, int color)
@@ -54,27 +84,3 @@ void	set_pixel_color(t_imgdata *img_data, int x, int y, int color)
 	offset = (y * img_data->line_length) + (x * (img_data->bpp / 8));
 	*(unsigned int *)(img_data->addr + offset) = color;
 }
-
-void	init_pallete(t_data *data)
-{
-	data->pallete[8] = 0x000000;
-	data->pallete[7] = 0x222222;
-	data->pallete[6] = 0x444444;
-	data->pallete[5] = 0x666666;
-	data->pallete[4] = 0x888888;
-	data->pallete[3] = 0xAAAAAA;
-	data->pallete[2] = 0xDDDDDD;
-	data->pallete[1] = 0xEEEEEE;
-	data->pallete[0] = 0xFFFFFF;
-	data->fill_color = data->pallete[data->fill_index];
-}
-
-//	data->pallete[0] = 0x000000;
-// 	data->pallete[1] = 0xFF0000;
-// 	data->pallete[2] = 0x00FF00;
-// 	data->pallete[3] = 0x0000FF;
-// 	data->pallete[4] = 0xFFFF00;
-// 	data->pallete[5] = 0xFF00FF;
-// 	data->pallete[6] = 0x00FFFF;
-// 	data->pallete[7] = 0xFF6600;
-// 	data->pallete[8] = 0xFFFFFF;

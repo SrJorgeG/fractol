@@ -15,11 +15,11 @@ MLXDIR = minilibx-linux
 MLXLIB = $(MLXDIR)/libmlx_Linux.a
 CFLAGS  = -Wall -Wextra -Werror -O3 -flto
 #-g -fsanitize=address,leak
-SRC = fractol.c init.c aux_functions.c draw.c color.c hooks.c hooks_utils.c
+SRC = fractol.c parse.c init.c aux_functions.c draw.c color.c hooks.c hooks_utils.c
 
 OBJ = $(SRC:.c=.o)
 
-LIB = -L$(MLXDIR) -lmlx -lXext -lX11 -lm
+LIB = -L$(MLXDIR) -lmlx -lXext -lX11 -lm -lpthread
 all: $(MINILIBX) $(NAME) 
 
 $(MLXLIB):
