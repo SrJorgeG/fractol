@@ -11,64 +11,67 @@
 /* ************************************************************************** */
 
 #include "fractol.h"
-#include <stdbool.h>
+#include <unistd.h>
 
-double	ft_atod(const char *str, int *valid)
+static double	ft_atod(const char *str, int *valid)
 {
-	double			nbr;
-	double			part;
-	double			sign;
-	int				valid_nums;
+	double	nbr;
+	double	div;
+	double	sign;
+	int		digits;
 
-	valid_nums = 0;
-	while (*str == ' ' || *str == '\f' || *str == '\t'
-		|| *str == '\n' || *str == '\r' || *str == '\v')
+	digits = 0;
+	while (*str == ' ' || (*str >= '\t' && *str <= '\r'))
 		str++;
 	sign = 1.0;
 	if (*str == '-' || *str == '+')
 		if (*(str++) == '-')
 			sign = -1.0;
 	nbr = 0.0;
-	while (*str >= '0' && *str <= '9' && ++valid_nums)
+	while (*str >= '0' && *str <= '9' && ++digits)
 		nbr = nbr * 10 + (*(str++) - '0');
+	div = 1.0;
 	if (*str == '.' || *str == ',')
-	{
-		while (*(++str) >= '0' && *str <= '9' && ++valid_nums)
-			part = 0.0;
-		while (*(--str) >= '0' && *str <= '9')
-			part = (part + (*str - '0')) / 10.0;
-		nbr += part;
-	}
-	return (valid && (*valid = valid_nums != 0), nbr * sign);
+		while (*(++str) >= '0' && *str <= '9' && ++digits)
+			nbr += (*str - '0') / (div *= 10.0);
+	if (valid)
+		*valid = (digits != 0 && *str == '\0');
+	return (nbr * sign);
 }
 
-int	isnum(char *str)
+static int	isnum(char *str)
 {
-	int	i;
+	int	valid;
 
-	i = 0;
-	ft_atod(str, &i);
-	if (!i)
-		return (0);
-	return (1);
+	valid = 0;
+	ft_atod(str, &valid);
+	return (valid);
+}
+
+static void	usage_exit(t_data *data)
+{
+	write(2, "Usage: ./fractol mandelbrot\n"
+		"       ./fractol julia <real> <imaginary>  (e.g. julia -0.8 0.156)\n"
+		"       ./fractol bship\n", 118);
+	error_exit(data);
 }
 
 void	parse(int ac, char *av[], t_data *data)
 {
-	if (ac == 2 && !ft_strncmp("mandelbrot", av[1], 10))
+	if (ac == 2 && !ft_strncmp("mandelbrot", av[1], 11))
 		data->frac_type = MANDELBROT;
 	else if (ac == 4 && !ft_strncmp("julia", av[1], 6))
 	{
 		data->frac_type = JULIA;
 		if (!isnum(av[2]) || !isnum(av[3]))
-			error_exit(data);
+			usage_exit(data);
 		data->j_c_real = ft_atod(av[2], 0);
 		data->j_c_i = ft_atod(av[3], 0);
 	}
-	else if (ac == 2 && !ft_strncmp("bship", av[1], 10))
+	else if (ac == 2 && !ft_strncmp("bship", av[1], 6))
 		data->frac_type = BSHIP;
 	else
-		error_exit(data);
+		usage_exit(data);
 }
 
 void	hook_caller(t_data *data)

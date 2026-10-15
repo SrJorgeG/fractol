@@ -19,7 +19,7 @@ int	palette_color(double smooth_iter, double max_iter, t_data *data)
 	double	t;
 
 	t = (smooth_iter / max_iter * 8) - (int)(smooth_iter / max_iter * 8);
-	i = ((int)(smooth_iter / max_iter * 8) + data->fill_index) % 9;
+	i = ((int)(smooth_iter / max_iter * 8) + data->fill_index) % 8;
 	if (i >= data->fill_index)
 		i++;
 	color.r = (int)((data->pallete[i] >> 16 & 0xFF)
